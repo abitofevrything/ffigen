@@ -23,16 +23,15 @@ void main() {
       lib = StringTestObjCLibrary(DynamicLibrary.open(dylib.absolute.path));
     });
 
-    // TODO(#329): Add 'Embedded\u0000Null'.
-    for (final s in ['Hello', '🇵🇬']) {
+    for (final s in ['Hello', '🇵🇬', 'Embedded\u0000Null']) {
       test('NSString to/from Dart string [$s]', () {
         final ns1 = NSString(lib, s);
-        expect(ns1.toString(), s);
         expect(ns1.length, s.length);
+        expect(ns1.toString(), s);
 
         final ns2 = s.toNSString(lib);
-        expect(ns2.toString(), s);
         expect(ns2.length, s.length);
+        expect(ns2.toString(), s);
       });
     }
 

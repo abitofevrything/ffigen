@@ -102,19 +102,22 @@ class ObjCBuiltInFunctions {
   }
 
   void generateNSStringUtils(Writer w, StringBuffer s) {
-    // Generate a constructor that wraps stringWithCString.
+    // Generate a constructor that wraps stringWithCharacters.
     s.write('  factory NSString(${w.className} _lib, String str) {\n');
-    s.write('    final cstr = str.toNativeUtf8();\n');
-    s.write('    final nsstr = stringWithCString_encoding('
-        '_lib, cstr.cast(), 4 /* UTF8 */);\n');
+    s.write('    final cstr = str.toNativeUtf16();\n');
+    s.write('    final nsstr = stringWithCharacters_length('
+        '_lib, cstr.cast(), str.length);\n');
     s.write('    ${w.ffiPkgLibraryPrefix}.calloc.free(cstr);\n');
     s.write('    return nsstr;\n');
     s.write('  }\n\n');
 
-    // Generate a toString method that wraps UTF8String.
+    // Generate a toString method that wraps dataUsingEncoding.
     s.write('  @override\n');
-    s.write('  String toString() => UTF8String().cast<'
-        '${w.ffiPkgLibraryPrefix}.Utf8>().toDartString();\n\n');
+    s.write('  String toString() {\n');
+    s.write('    final data = dataUsingEncoding(10 /* UTF16 */, true);\n');
+    s.write('    return data.bytes.cast<'
+        '${w.ffiPkgLibraryPrefix}.Utf8>().toDartString(length: length);\n');
+    s.write('  }\n\n');
   }
 
   void generateStringUtils(Writer w, StringBuffer s) {

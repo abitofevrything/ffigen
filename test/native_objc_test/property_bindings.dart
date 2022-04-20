@@ -437,19 +437,19 @@ class PropertyTestObjCLibrary {
       _registerName1("superclass");
   late final ffi.Pointer<ObjCSel> _sel_class1 = _registerName1("class");
   late final ffi.Pointer<ObjCObject> _class_NSString1 = _getClass1("NSString");
-  late final ffi.Pointer<ObjCSel> _sel_stringWithCString_encoding_1 =
-      _registerName1("stringWithCString:encoding:");
+  late final ffi.Pointer<ObjCSel> _sel_stringWithCharacters_length_1 =
+      _registerName1("stringWithCharacters:length:");
   ffi.Pointer<ObjCObject> _objc_msgSend_12(
     ffi.Pointer<ObjCObject> obj,
     ffi.Pointer<ObjCSel> sel,
-    ffi.Pointer<pkg_ffi.Char> cString,
-    int enc,
+    ffi.Pointer<pkg_ffi.WChar> characters,
+    int length,
   ) {
     return __objc_msgSend_12(
       obj,
       sel,
-      cString,
-      enc,
+      characters,
+      length,
     );
   }
 
@@ -458,31 +458,39 @@ class PropertyTestObjCLibrary {
           ffi.Pointer<ObjCObject> Function(
               ffi.Pointer<ObjCObject>,
               ffi.Pointer<ObjCSel>,
-              ffi.Pointer<pkg_ffi.Char>,
+              ffi.Pointer<pkg_ffi.WChar>,
               pkg_ffi.UnsignedInt)>>('objc_msgSend');
   late final __objc_msgSend_12 = __objc_msgSend_12Ptr.asFunction<
       ffi.Pointer<ObjCObject> Function(ffi.Pointer<ObjCObject>,
-          ffi.Pointer<ObjCSel>, ffi.Pointer<pkg_ffi.Char>, int)>();
+          ffi.Pointer<ObjCSel>, ffi.Pointer<pkg_ffi.WChar>, int)>();
 
-  late final ffi.Pointer<ObjCSel> _sel_UTF8String1 =
-      _registerName1("UTF8String");
+  late final ffi.Pointer<ObjCSel>
+      _sel_dataUsingEncoding_allowLossyConversion_1 =
+      _registerName1("dataUsingEncoding:allowLossyConversion:");
   ffi.Pointer<pkg_ffi.Char> _objc_msgSend_13(
     ffi.Pointer<ObjCObject> obj,
     ffi.Pointer<ObjCSel> sel,
+    int encoding,
+    bool allowLossyConversion,
   ) {
     return __objc_msgSend_13(
       obj,
       sel,
+      encoding,
+      allowLossyConversion ? 1 : 0,
     );
   }
 
   late final __objc_msgSend_13Ptr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<pkg_ffi.Char> Function(
-              ffi.Pointer<ObjCObject>, ffi.Pointer<ObjCSel>)>>('objc_msgSend');
+              ffi.Pointer<ObjCObject>,
+              ffi.Pointer<ObjCSel>,
+              pkg_ffi.UnsignedInt,
+              ffi.Uint8)>>('objc_msgSend');
   late final __objc_msgSend_13 = __objc_msgSend_13Ptr.asFunction<
       ffi.Pointer<pkg_ffi.Char> Function(
-          ffi.Pointer<ObjCObject>, ffi.Pointer<ObjCSel>)>();
+          ffi.Pointer<ObjCObject>, ffi.Pointer<ObjCSel>, int, int)>();
 
   late final ffi.Pointer<ObjCSel> _sel_description1 =
       _registerName1("description");
@@ -916,24 +924,32 @@ class NSString extends _ObjCWrapper {
   }
 
   factory NSString(PropertyTestObjCLibrary _lib, String str) {
-    final cstr = str.toNativeUtf8();
-    final nsstr = stringWithCString_encoding(_lib, cstr.cast(), 4 /* UTF8 */);
+    final cstr = str.toNativeUtf16();
+    final nsstr = stringWithCharacters_length(_lib, cstr.cast(), str.length);
     pkg_ffi.calloc.free(cstr);
     return nsstr;
   }
 
   @override
-  String toString() => UTF8String().cast<pkg_ffi.Utf8>().toDartString();
+  String toString() {
+    final data = dataUsingEncoding(10 /* UTF16 */, true);
+    return data.bytes.cast<pkg_ffi.Utf8>().toDartString(length: length);
+  }
 
-  static NSString stringWithCString_encoding(PropertyTestObjCLibrary _lib,
-      ffi.Pointer<pkg_ffi.Char> cString, int enc) {
+  static NSString stringWithCharacters_length(PropertyTestObjCLibrary _lib,
+      ffi.Pointer<pkg_ffi.WChar> characters, int length) {
     final _ret = _lib._objc_msgSend_12(_lib._class_NSString1,
-        _lib._sel_stringWithCString_encoding_1, cString, enc);
+        _lib._sel_stringWithCharacters_length_1, characters, length);
     return NSString._(_ret, _lib);
   }
 
-  ffi.Pointer<pkg_ffi.Char> UTF8String() {
-    return _lib._objc_msgSend_13(_id, _lib._sel_UTF8String1);
+  ffi.Pointer<pkg_ffi.Char> dataUsingEncoding_allowLossyConversion(
+      int encoding, bool allowLossyConversion) {
+    return _lib._objc_msgSend_13(
+        _id,
+        _lib._sel_dataUsingEncoding_allowLossyConversion_1,
+        encoding,
+        allowLossyConversion);
   }
 }
 

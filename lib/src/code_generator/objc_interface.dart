@@ -260,21 +260,24 @@ class ObjCInterface extends BindingType {
 
   void _addNSStringMethods() {
     addMethodIfMissing(ObjCMethod(
-      originalName: 'stringWithCString:encoding:',
+      originalName: 'stringWithCharacters:length:',
       kind: ObjCMethodKind.method,
       isClass: true,
       returnType: this,
       params_: [
-        ObjCMethodParam(PointerType(charType), 'cString'),
-        ObjCMethodParam(unsignedIntType, 'enc'),
+        ObjCMethodParam(PointerType(wCharType), 'characters'),
+        ObjCMethodParam(unsignedIntType, 'length'),
       ],
     ));
     addMethodIfMissing(ObjCMethod(
-      originalName: 'UTF8String',
+      originalName: 'dataUsingEncoding:allowLossyConversion:',
       kind: ObjCMethodKind.method,
       isClass: false,
-      returnType: PointerType(charType),
-      params_: [],
+      returnType: this,  // TODO: Return NSData
+      params_: [
+        ObjCMethodParam(unsignedIntType, 'encoding'),
+        ObjCMethodParam(BooleanType(), 'allowLossyConversion'),
+      ],
     ));
   }
 
